@@ -6,7 +6,7 @@ import fr.maif.otoroshi.daikoku.audit._
 import fr.maif.otoroshi.daikoku.audit.config._
 import fr.maif.otoroshi.daikoku.ctrls.authorizations.async._UberPublicUserAccess
 import fr.maif.otoroshi.daikoku.domain.NotificationAction._
-import fr.maif.otoroshi.daikoku.domain.ValueType
+import fr.maif.otoroshi.daikoku.domain.NotificationsQueries._
 import fr.maif.otoroshi.daikoku.domain.json.{TenantIdFormat, UserIdFormat}
 import fr.maif.otoroshi.daikoku.env.Env
 import fr.maif.otoroshi.daikoku.utils.S3Configuration
@@ -1267,7 +1267,11 @@ object SchemaDefinition {
 
     (
       Schema(ObjectType("Query",
-        () => fields[(DataStore, DaikokuActionContext[JsValue]), Unit](allFields() ++ teamQueryFields() ++ apiQueryFields():_*)
+        () => fields[(DataStore, DaikokuActionContext[JsValue]), Unit](
+          allFields()
+          ++ teamQueryFields()
+          ++ apiQueryFields()
+          ++ NotificationsQueries.queries():_*)
       )),
       DeferredResolver.fetchers(teamsFetcher)
     )

@@ -12,6 +12,7 @@ import { logout, updateNotications, updateTenant } from '../../core/context/acti
 import { Can, manage, daikoku, tenant } from '../utils';
 import { MessagesTopBarTools } from '../backoffice/messages';
 import { I18nContext } from '../../locales/i18n-context';
+import { getApolloContext } from '@apollo/client';
 
 const GuestUserMenu = ({ loginProvider }) => {
   const { translateMethod } = useContext(I18nContext);
@@ -65,6 +66,7 @@ const TopBarComponent = (props) => {
   const [daikokuVersion, setVersion] = useState(null);
 
   const navigate = useNavigate();
+  const { client } = useContext(getApolloContext());
 
   const { translateMethod, setLanguage, language, isTranslationMode, languages } =
     useContext(I18nContext);
@@ -73,11 +75,13 @@ const TopBarComponent = (props) => {
     props.tenant.tenantMode && props.tenant.tenantMode !== 'Default' && !isTranslationMode;
 
   useEffect(() => {
-    Promise.all([Services.myUnreadNotificationsCount(), Services.teams()]).then(
-      ([unreadNotifications, teams]) => {
-        props.updateNotificationsCount(unreadNotifications.count);
-        setTeams(teams);
-      }
+    Promise.all([
+      client.query({ query: Services.notificationQueries.myUnreadNotificationsCount() }),
+      Services.teams()
+    ]).then(([{ data: { count }, }, teams]) => {
+      props.updateNotificationsCount(count);
+      setTeams(teams);
+    }
     );
   }, []);
 
@@ -168,7 +172,7 @@ const TopBarComponent = (props) => {
   const isDefaultLogo = props.tenant.logo === '/assets/images/daikoku.svg';
   return (
     <header className={impersonator ? 'impersonator-topbar-mb' : ''}>
-      {}
+      { }
       <div className="navbar shadow-sm fixed-top">
         <div className="container-fluid d-flex justify-content-center justify-content-lg-between align-items-end px-0">
           <div className="d-flex flex-column flex-md-row">
@@ -279,11 +283,9 @@ const TopBarComponent = (props) => {
                     data-toggle="dropdown"
                     title={
                       impersonator
-                        ? `${props.connectedUser.name} (${
-                            props.connectedUser.email
-                          }) ${translateMethod('Impersonated by')} ${impersonator.name} (${
-                            impersonator.email
-                          })`
+                        ? `${props.connectedUser.name} (${props.connectedUser.email
+                        }) ${translateMethod('Impersonated by')} ${impersonator.name} (${impersonator.email
+                        })`
                         : props.connectedUser.name
                     }
                     alt="user menu"

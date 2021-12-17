@@ -67,32 +67,6 @@ class NotificationController(
       }
   }
 
-  def myUnreadNotificationsCount() = DaikokuActionMaybeWithGuest.async { ctx =>
-    UberPublicUserAccess(AuditTrailEvent(
-      s"@{user.name} has accessed to his count of unread notifications"))(ctx) {
-      for {
-        myTeams <- env.dataStore.teamRepo.myTeams(ctx.tenant, ctx.user)
-        notificationRepo <- env.dataStore.notificationRepo
-          .forTenantF(ctx.tenant.id)
-        youHaveUnreadNotifications <- notificationRepo.findNotDeleted(
-          Json.obj(
-            "status.status" -> "Pending",
-            "$or" -> Json.arr(
-              Json.obj(
-                "team" -> Json.obj("$in" -> JsArray(myTeams
-                  .filter(t => t.admins().contains(ctx.user.id))
-                  .map(_.id.asJson)))),
-              Json.obj("action.user" -> ctx.user.id.asJson)
-            )
-          )
-        )
-      } yield {
-        ctx.setCtxValue("notifications", youHaveUnreadNotifications.size)
-        Ok(Json.obj("count" -> youHaveUnreadNotifications.size))
-      }
-    }
-  }
-
   def myNotifications(page: Int, pageSize: Int) = DaikokuAction.async { ctx =>
     PublicUserAccess(AuditTrailEvent(
       s"@{user.name} has accessed to his count of unread notifications"))(ctx) {

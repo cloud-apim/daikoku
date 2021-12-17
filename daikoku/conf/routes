@@ -69,8 +69,6 @@ GET     /api/me/notifications                           fr.maif.otoroshi.daikoku
 ### NoDocs ###
 GET     /api/me/notifications/all                       fr.maif.otoroshi.daikoku.ctrls.NotificationController.myNotifications(page: Int ?= 0, pageSize: Int ?= 10)
 ### NoDocs ###
-GET     /api/me/notifications/unread-count              fr.maif.otoroshi.daikoku.ctrls.NotificationController.myUnreadNotificationsCount()
-### NoDocs ###
 GET     /api/me/visible-apis/:humanReadableId/:version  fr.maif.otoroshi.daikoku.ctrls.ApiController.getVisibleApi(humanReadableId, version)
 ### NoDocs ###
 GET     /api/me/visible-apis/:id                        fr.maif.otoroshi.daikoku.ctrls.ApiController.getVisibleApiWithId(id)

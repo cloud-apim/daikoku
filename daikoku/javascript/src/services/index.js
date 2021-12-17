@@ -34,12 +34,6 @@ export const myAllNotifications = (page = 0, pageSize = 10) =>
 export const myNotifications = (page = 0, pageSize = 10) =>
   customFetch(`/api/me/notifications?page=${page}&pageSize=${pageSize}`);
 
-export const myUnreadNotificationsCount = () =>
-  fetch('/api/me/notifications/unread-count').then(
-    (r) => (r.status === 200 ? r.json() : { count: 0 }),
-    () => ({ count: 0 })
-  );
-
 export const acceptNotificationOfTeam = (NotificationId, values = {}) =>
   customFetch(`/api/notifications/${NotificationId}/accept`, {
     method: 'PUT',
@@ -717,9 +711,9 @@ export const checkConnection = (config, user) =>
     method: 'POST',
     body: user
       ? JSON.stringify({
-          config,
-          user,
-        })
+        config,
+        user,
+      })
       : JSON.stringify(config),
   });
 
@@ -941,3 +935,11 @@ export const graphql = {
     `),
   myVisibleApisOfTeam: (teamId) => graphql.myVisibleApis(teamId),
 };
+
+export const notificationQueries = {
+  myUnreadNotificationsCount: () => gql`
+  query myUnreadNotificationsCount {
+    count: myUnreadNotificationsCount
+  }
+`
+}
