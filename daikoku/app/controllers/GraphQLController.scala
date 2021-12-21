@@ -1,19 +1,7 @@
 package fr.maif.otoroshi.daikoku.ctrls
 
-import fr.maif.otoroshi.daikoku.actions.{
-  DaikokuAction,
-  DaikokuActionContext,
-  DaikokuActionMaybeWithGuest
-}
-import fr.maif.otoroshi.daikoku.domain.SchemaDefinition.NotAuthorizedError
-import fr.maif.otoroshi.daikoku.domain.{
-  DatastoreId,
-  SchemaDefinition,
-  User,
-  UserId,
-  UserSession,
-  UserSessionId
-}
+import fr.maif.otoroshi.daikoku.actions.{DaikokuAction, DaikokuActionContext, DaikokuActionMaybeWithGuest}
+import fr.maif.otoroshi.daikoku.domain.{DatastoreId, GraphQLError, NotAuthorizedError, SchemaDefinition, User, UserId, UserSession, UserSessionId}
 import fr.maif.otoroshi.daikoku.env.Env
 import fr.maif.otoroshi.daikoku.utils.IdGenerator
 import fr.maif.otoroshi.daikoku.utils.admin.DaikokuApiAction
@@ -21,13 +9,7 @@ import org.joda.time.DateTime
 import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.libs.json.{JsObject, JsValue, Json}
-import sangria.execution.{
-  ExceptionHandler,
-  Executor,
-  HandledException,
-  MaxQueryDepthReachedError,
-  QueryReducer
-}
+import sangria.execution.{ExceptionHandler, Executor, HandledException, MaxQueryDepthReachedError, QueryReducer}
 import storage.DataStore
 import play.api.mvc._
 import reactivemongo.bson.BSONObjectID
@@ -53,14 +35,14 @@ class GraphQLController(
   implicit val ec = env.defaultExecutionContext
   implicit val ev = env
 
-  lazy val (schema, resolver) = SchemaDefinition.getSchema(env)
+  lazy val (schema, resolver) = new SchemaDefinition(env).getSchema()
 
   val logger = Logger("GraphQLController")
 
   def adminApiSearch() = DaikokuApiAction.async(parse.json) { ctx =>
     val query = (ctx.request.body \ "query").as[String]
-    val variables = (ctx.request.body \ "variables").asOpt[String]
-    val operation = (ctx.request.body \ "operation").asOpt[String]
+    val variables = (ctx.request.body \ "variables").asOpt[JsObject]
+    val operationName = (ctx.request.body \ "operationName").asOpt[String]
 
     val user = User(
       id = UserId(BSONObjectID.generate().stringify),
@@ -99,8 +81,8 @@ class GraphQLController(
 
     executeQuery(generatedContext,
                  query,
-                 variables map parseVariables,
-                 operation)
+                 variables,
+                  operationName)
   }
 
   def adminApiSchema = DaikokuApiAction {
@@ -109,24 +91,21 @@ class GraphQLController(
 
   def search() = DaikokuActionMaybeWithGuest.async(parse.json) { ctx =>
     val query = (ctx.request.body \ "query").as[String]
-    val variables = (ctx.request.body \ "variables").asOpt[String]
-    val operation = (ctx.request.body \ "operation").asOpt[String]
-    executeQuery(ctx, query, variables map parseVariables, operation)
+    val variables = (ctx.request.body \ "variables").asOpt[JsObject]
+    val operationName = (ctx.request.body \ "operationName").asOpt[String]
+
+    executeQuery(ctx, query, variables, operationName)
   }
 
   def renderSchema = DaikokuAction {
     Ok(SchemaRenderer.renderSchema(schema))
   }
 
-  private def parseVariables(variables: String) =
-    if (variables.trim == "" || variables.trim == "null") Json.obj()
-    else Json.parse(variables).as[JsObject]
-
   case object TooComplexQueryError extends Exception("Query is too expensive.")
 
   lazy val exceptionHandler = ExceptionHandler {
-    case (_, error @ NotAuthorizedError(_)) =>
-      HandledException(error.getMessage)
+    case (_, error @ NotAuthorizedError(_)) => HandledException(error.getMessage)
+    case (_, error @ GraphQLError(_)) => HandledException(error.getMessage)
     case (_, error @ TooComplexQueryError) => HandledException(error.getMessage)
     case (_, error @ MaxQueryDepthReachedError(_)) =>
       HandledException(error.getMessage)
@@ -135,7 +114,7 @@ class GraphQLController(
   private def executeQuery(ctx: DaikokuActionContext[JsValue],
                            query: String,
                            variables: Option[JsObject],
-                           operation: Option[String]) =
+                           operationName: Option[String]) =
     QueryParser.parse(query) match {
       case Success(queryAst) =>
         Executor
@@ -143,7 +122,7 @@ class GraphQLController(
             schema,
             queryAst,
             (env.dataStore, ctx),
-            operationName = operation,
+            operationName = operationName,
             variables = variables getOrElse Json.obj(),
             deferredResolver = resolver,
             exceptionHandler = exceptionHandler,

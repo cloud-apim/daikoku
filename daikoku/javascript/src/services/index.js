@@ -21,18 +21,11 @@ export const getTeamVisibleApi = (teamId, apiId, version) =>
 export const myTeams = () => customFetch('/api/me/teams');
 export const allJoinableTeams = () => customFetch('/api/teams/joinable');
 
-export const teamAllNotifications = (teamId, page = 0) =>
-  customFetch(`/api/teams/${teamId}/notifications/all?page=${page}`);
-export const teamNotifications = (teamId) => customFetch(`/api/teams/${teamId}/notifications`);
-export const teamUnreadNotificationsCount = (teamId) =>
-  fetch(`/api/teams/${teamId}/notifications/unread-count`, { ...HEADERS }).then(
-    (r) => (r.status === 200 ? r.json() : { count: 0 }),
-    () => ({ count: 0 })
-  );
-export const myAllNotifications = (page = 0, pageSize = 10) =>
-  customFetch(`/api/me/notifications/all?page=${page}&pageSize=${pageSize}`);
 export const myNotifications = (page = 0, pageSize = 10) =>
   customFetch(`/api/me/notifications?page=${page}&pageSize=${pageSize}`);
+
+export const myAllNotifications = (page = 0, pageSize = 10) =>
+  customFetch(`/api/me/notifications/all?page=${page}&pageSize=${pageSize}`);
 
 export const acceptNotificationOfTeam = (NotificationId, values = {}) =>
   customFetch(`/api/notifications/${NotificationId}/accept`, {
@@ -940,6 +933,5 @@ export const notificationQueries = {
   myUnreadNotificationsCount: () => gql`
   query myUnreadNotificationsCount {
     count: myUnreadNotificationsCount
-  }
-`
+  }`
 }

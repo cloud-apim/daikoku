@@ -9,6 +9,7 @@ import akka.kafka.ProducerSettings
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import akka.stream.{OverflowStrategy, QueueOfferResult}
 import akka.{Done, NotUsed}
+import fr.maif.otoroshi.daikoku.actions.DaikokuActionContext
 import fr.maif.otoroshi.daikoku.audit.config.{ElasticAnalyticsConfig, Webhook}
 import fr.maif.otoroshi.daikoku.domain._
 import fr.maif.otoroshi.daikoku.env.Env
@@ -82,6 +83,14 @@ object AuthorizationLevel {
 
 sealed trait AuditEvent {
   def message: String
+
+  def logTenantAuditEventWithCtx[T](ctx: DaikokuActionContext[T],
+                                    authorized: AuthorizationLevel,
+                                    details: JsObject = Json.obj())(
+                                     implicit ec: ExecutionContext,
+                                     env: Env): Unit = {
+    logTenantAuditEvent(ctx.tenant, ctx.user, ctx.session, ctx.request, ctx.ctx, authorized, details)
+  }
   def logTenantAuditEvent(tenant: Tenant,
                           user: User,
                           session: UserSession,

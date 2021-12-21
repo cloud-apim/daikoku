@@ -131,36 +131,13 @@ object authorizations {
         implicit ec: ExecutionContext,
         env: Env): Future[Either[B, AppError]] = {
       if (ctx.user.isDaikokuAdmin) {
-        f.andThen {
-            case _ =>
-              audit.logTenantAuditEvent(
-                ctx.tenant,
-                ctx.user,
-                ctx.session,
-                ctx.request,
-                ctx.ctx,
-                AuthorizationLevel.AuthorizedDaikokuAdmin)
-          }
+        f.andThen { case _ => audit.logTenantAuditEventWithCtx(ctx, AuthorizationLevel.AuthorizedDaikokuAdmin) }
           .flatMap(f => FastFuture.successful(Left(f)))
       } else if (ctx.user.tenants.contains(ctx.tenant.id)) {
-        f.andThen {
-            case _ =>
-              audit.logTenantAuditEvent(ctx.tenant,
-                                        ctx.user,
-                                        ctx.session,
-                                        ctx.request,
-                                        ctx.ctx,
-                                        AuthorizationLevel.AuthorizedUberPublic)
-          }
+        f.andThen { case _ => audit.logTenantAuditEventWithCtx(ctx, AuthorizationLevel.AuthorizedUberPublic) }
           .flatMap(f => FastFuture.successful(Left(f)))
       } else {
-        audit.logTenantAuditEvent(ctx.tenant,
-                                  ctx.user,
-                                  ctx.session,
-                                  ctx.request,
-                                  ctx.ctx,
-                                  AuthorizationLevel.NotAuthorized)
-
+        audit.logTenantAuditEventWithCtx(ctx, AuthorizationLevel.NotAuthorized)
         FastFuture.successful(Right(Unauthorized))
       }
     }
@@ -176,40 +153,34 @@ object authorizations {
         }
     }
 
-    def PublicUserAccess[T](audit: AuditEvent)(ctx: DaikokuActionContext[T])(
-        f: => Future[Result])(implicit ec: ExecutionContext,
-                              env: Env): Future[Result] = {
+    def _PublicUserAccess[T, B](audit: AuditEvent)(
+        ctx: DaikokuActionContext[T])(f: => Future[B])(
+        implicit ec: ExecutionContext, env: Env): Future[Either[B, AppError]] = {
       if (ctx.user.isDaikokuAdmin) {
         f.andThen {
           case _ =>
-            audit.logTenantAuditEvent(ctx.tenant,
-                                      ctx.user,
-                                      ctx.session,
-                                      ctx.request,
-                                      ctx.ctx,
-                                      AuthorizationLevel.AuthorizedDaikokuAdmin)
-        }
+            audit.logTenantAuditEventWithCtx(ctx, AuthorizationLevel.AuthorizedDaikokuAdmin)
+        }.flatMap(f => FastFuture.successful(Left(f)))
       } else if (ctx.user.tenants.contains(ctx.tenant.id)) {
         f.andThen {
           case _ =>
-            audit.logTenantAuditEvent(ctx.tenant,
-                                      ctx.user,
-                                      ctx.session,
-                                      ctx.request,
-                                      ctx.ctx,
-                                      AuthorizationLevel.AuthorizedPublic)
-        }
+            audit.logTenantAuditEventWithCtx(ctx, AuthorizationLevel.AuthorizedPublic)
+        }.flatMap(f => FastFuture.successful(Left(f)))
       } else {
-        audit.logTenantAuditEvent(ctx.tenant,
-                                  ctx.user,
-                                  ctx.session,
-                                  ctx.request,
-                                  ctx.ctx,
-                                  AuthorizationLevel.NotAuthorized)
-        FastFuture.successful(
-          Results.Unauthorized(
-            Json.obj("error" -> "You're not authorized here")))
+        audit.logTenantAuditEventWithCtx(ctx, AuthorizationLevel.NotAuthorized)
+
+        FastFuture.successful(Right(Unauthorized))
       }
+    }
+
+    def PublicUserAccess[T](audit: AuditEvent)(ctx: DaikokuActionContext[T])(
+        f: => Future[Result])(implicit ec: ExecutionContext,
+                              env: Env): Future[Result] = {
+      _PublicUserAccess(audit)(ctx)(f)
+        .map {
+          case Left(value)  => value
+          case Right(value) => AppError.render(value)
+        }
     }
 
     def TenantAdminAccessTenant[T](audit: AuditEvent)(

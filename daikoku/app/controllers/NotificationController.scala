@@ -67,39 +67,6 @@ class NotificationController(
       }
   }
 
-  def myNotifications(page: Int, pageSize: Int) = DaikokuAction.async { ctx =>
-    PublicUserAccess(AuditTrailEvent(
-      s"@{user.name} has accessed to his count of unread notifications"))(ctx) {
-      for {
-        myTeams <- env.dataStore.teamRepo.myTeams(ctx.tenant, ctx.user)
-        notificationRepo <- env.dataStore.notificationRepo
-          .forTenantF(ctx.tenant.id)
-        notifications <- {
-          notificationRepo.findWithPagination(
-            Json.obj(
-              "_deleted" -> false,
-              "$or" -> Json.arr(
-                Json.obj(
-                  "team" -> Json.obj("$in" -> JsArray(myTeams
-                    .filter(t => t.admins().contains(ctx.user.id))
-                    .map(_.id.asJson)))),
-                Json.obj("action.user" -> ctx.user.id.asJson)
-              )
-            ),
-            page,
-            pageSize
-          )
-        }
-      } yield {
-        Ok(
-          Json.obj("notifications" -> notifications._1.map(_.asJson),
-                   "count" -> notifications._2,
-                   "page" -> page,
-                   "pageSize" -> pageSize))
-      }
-    }
-  }
-
   def myUntreatedNotifications(page: Int, pageSize: Int) = DaikokuAction.async {
     ctx =>
       PublicUserAccess(
@@ -132,6 +99,39 @@ class NotificationController(
                      "pageSize" -> pageSize))
         }
       }
+  }
+
+  def myNotifications(page: Int, pageSize: Int) = DaikokuAction.async { ctx =>
+    PublicUserAccess(AuditTrailEvent(
+      s"@{user.name} has accessed to his count of unread notifications"))(ctx) {
+      for {
+        myTeams <- env.dataStore.teamRepo.myTeams(ctx.tenant, ctx.user)
+        notificationRepo <- env.dataStore.notificationRepo
+          .forTenantF(ctx.tenant.id)
+        notifications <- {
+          notificationRepo.findWithPagination(
+            Json.obj(
+              "_deleted" -> false,
+              "$or" -> Json.arr(
+                Json.obj(
+                  "team" -> Json.obj("$in" -> JsArray(myTeams
+                    .filter(t => t.admins().contains(ctx.user.id))
+                    .map(_.id.asJson)))),
+                Json.obj("action.user" -> ctx.user.id.asJson)
+              )
+            ),
+            page,
+            pageSize
+          )
+        }
+      } yield {
+        Ok(
+          Json.obj("notifications" -> notifications._1.map(_.asJson),
+            "count" -> notifications._2,
+            "page" -> page,
+            "pageSize" -> pageSize))
+      }
+    }
   }
 
   def notificationOfTeam(teamId: String, page: Int, pageSize: Int) =
