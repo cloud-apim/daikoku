@@ -239,7 +239,7 @@ Proin vehicula ligula vel enim euismod, sed congue mi egestas. Nullam varius ut 
             </button>
           </div>
         </div>
-        <div className="d-flex flex-row mt-1 mb-2">{injectButtons()}</div>
+        <div className="d-flex flex-row mt-1 mb-2 flex-wrap">{injectButtons()}</div>
         <div style={{ width: props.fixedWitdh || 250 }}>
           {props.assertChooserActive && (
             <AssetChooserByModal
