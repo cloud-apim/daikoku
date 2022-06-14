@@ -130,9 +130,9 @@ export const TeamEditForAdmin = () => {
 
   return (
     <Can I={manage} a={tenant} dispatchError>
-      <div className="row d-flex justify-content-start align-items-center mb-2">
+      <div className="row justify-content-start align-items-center mb-2">
         {team && (
-          <div className="ms-1 avatar__container">
+          <div className="col-12 ms-3 avatar__container">
             <img src={team.avatar} className="img-fluid" alt="avatar" />
           </div>
         )}
@@ -145,10 +145,10 @@ export const TeamEditForAdmin = () => {
             schema={schema}
             value={team}
             onChange={setTeam}
-            style={{ marginBottom: 100, paddingTop: 20 }}
+            style={{ marginBottom: 20 }}
           />
         </React.Suspense>
-        <div className="row form-back-fixedBtns">
+        <div className="row mb-4">
           <div className="d-flex justify-content-end">
             <Link className="btn btn-outline-primary" to={'/settings/teams'}>
               <i className="fas fa-chevron-left me-1" />
