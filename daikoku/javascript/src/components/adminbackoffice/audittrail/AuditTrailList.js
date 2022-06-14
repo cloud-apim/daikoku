@@ -91,7 +91,7 @@ export const AuditTrailList = () => {
   };
 
   const topBar = () => {
-    return <OtoDatePicker updateDateRange={updateDateRange} from={from} to={to} />;
+    return <div className='col-12'><OtoDatePicker updateDateRange={updateDateRange} from={from} to={to} /></div>;
   };
 
   const fetchItems = () => {

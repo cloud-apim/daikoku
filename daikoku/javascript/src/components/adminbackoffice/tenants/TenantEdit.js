@@ -957,9 +957,9 @@ const TenantEdition = (props) => {
         <div className="col-12 d-flex justify-content-start align-items-center mb-2">
           <div className="avatar__container">
             <img
-              style={{ width: '100%', height: 'auto' }}
               src={state.tenant?.style?.logo}
               alt="avatar"
+              className='img-fluid'
             />
           </div>
           <h1 className="h1-rwd-reduce ms-2">{state.tenant.name}</h1>

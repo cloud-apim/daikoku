@@ -210,7 +210,7 @@ export const Table = React.forwardRef(
     };
 
     const tablePagination = (
-      <div className="d-flex flex-row align-items-center justify-content-end flex-grow-1">
+      <div className="d-flex flex-row align-items-center justify-content-end flex-grow-1 flex-wrap mt-2 mt-sm-0">
         <span>
           {rows.length}{' '}
           <Translation i18nkey="Result" isPlural={rows.length > 1}>
@@ -218,7 +218,7 @@ export const Table = React.forwardRef(
           </Translation>
         </span>
         <Select
-          className="reactSelect reactSelect-pagination col-3 ms-3 me-3"
+          className="reactSelect reactSelect-pagination ms-3 me-3"
           value={{
             label: translateMethod('Show.results', false, `Show ${pageSize}`, pageSize),
             value: pageSize,
@@ -258,8 +258,8 @@ export const Table = React.forwardRef(
           <div className="rrow section">
             {header && (
               <div className="row" style={{ marginBottom: 10 }}>
-                <div className="col-md-12 d-flex">
-                  {injectTopBar && <div style={{ fontSize: 14 }}>{injectTopBar()}</div>}
+                <div className="col-12">
+                  {injectTopBar && <div className='row'>{injectTopBar()}</div>}
                   {tablePagination}
                 </div>
               </div>
