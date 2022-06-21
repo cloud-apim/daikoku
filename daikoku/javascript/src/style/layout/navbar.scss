@@ -107,7 +107,7 @@ a.navbar-brand, #teamSelector:hover {
   transition: width .2s ease-in-out;
 
   &.opened {
-    width: calc(75vw - 55px);
+    width: calc(100vw - 35px);
     overflow-y: auto;      
     @media screen and (min-width:768px){
       width: calc(35vw - 55px);
@@ -137,7 +137,7 @@ a.navbar-brand, #teamSelector:hover {
   transition: width .2s ease-in-out;
 
   &.opened {
-    width: 25vw;
+    width: 35px;
     @media screen and (min-width:768px){
       width: 65vw;
     }
@@ -190,7 +190,11 @@ a.navbar-brand, #teamSelector:hover {
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 
   &.opened {
-    width: 240px;
+    width: calc(100vw - 75px);
+    @media screen and (min-width:768px){
+      width: 240px;
+    }
+  
 
     .companion-content {
       opacity: 1;
