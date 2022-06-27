@@ -116,9 +116,8 @@ export const SessionList = () => {
               injectTopBar={() => (
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-danger"
+                  className="col-2 ms-3 btn btn-sm btn-outline-danger"
                   title="Delete all session"
-                  style={{ marginLeft: 10 }}
                   onClick={() => deleteSessions()}
                 >
                   <i className="fas fa-trash me-1" />
