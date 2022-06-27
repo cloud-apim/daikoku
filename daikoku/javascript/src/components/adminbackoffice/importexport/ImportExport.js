@@ -78,7 +78,7 @@ export const ImportExport = () => {
               {uploading ? translateMethod('importing ...') : translateMethod('import state')}
             </button>
             <div className="d-flex justify-content-start align-items-center mt-2">
-              <label className='me-3'>{translateMethod('audittrail.export.label')}</label>
+              <label className='me-3 mt-3'>{translateMethod('audittrail.export.label')}</label>
               <BooleanInput onChange={setExportAuditTrail} value={exportAuditTrail} />
             </div>
             <input
