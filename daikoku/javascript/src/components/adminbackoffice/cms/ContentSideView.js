@@ -121,7 +121,7 @@ const TopActions = ({ setSideView, publish, setSelector }) => {
       </button>
       <div className="d-flex">
         <button className="btn btn-sm btn-outline-primary" onClick={() => navigate('revisions')}>
-          Révisions
+        {translateMethod('cms.revisions')}
         </button>
         <button
           className="btn btn-sm btn-outline-success ms-1"
