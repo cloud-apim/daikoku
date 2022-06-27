@@ -90,7 +90,6 @@ const Collapse = ({
           <button
             type="button"
             className="btn btn-access-negative btn-sm"
-            style={{ float: 'right' }}
             onClick={() => toggleTranslation(translationKey)}
           >
             <i className={`fas fa-eye${!edited ? '' : '-slash'}`} />
