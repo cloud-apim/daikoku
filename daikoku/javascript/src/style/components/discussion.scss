@@ -1,8 +1,7 @@
 .messages-sender{
-  // width: 25%;
   background-color: $aside-bg-color;
-  height: calc(100vh - 160px);
-  overflow: scroll;
+  height: 100vh;
+  overflow-y: scroll;
   .messages-sender__active {
     background-color:$menu-text-hover-bg-color;
     border-left: 2px solid $danger-color;
@@ -15,8 +14,7 @@
   }
 }
 .messages-content{
-  // width: 75%;
-  overflow: scroll;
+  overflow-y: scroll;
   height: calc(100vh - 260px);
 }
 
