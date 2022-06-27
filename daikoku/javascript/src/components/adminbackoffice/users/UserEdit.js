@@ -292,7 +292,7 @@ export const UserEdit = () => {
             onSubmit={save}
             footer={({ reset, valid }) => {
               return (
-                <div className="d-flex justify-content-end">
+                <div className="d-flex justify-content-end mt-2">
                   <button className="btn btn-outline-danger" onClick={reset}>
                     <Translation i18nkey="Cancel">Cancel</Translation>
                   </button>
