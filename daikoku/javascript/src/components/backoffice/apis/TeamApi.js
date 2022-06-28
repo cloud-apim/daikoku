@@ -216,15 +216,13 @@ const TeamApiComponent = (props) => {
 
       const backButton = (
         <Link
-          className="d-flex justify-content-around mt-3 align-items-center"
+          className="d-flex justify-content-around mt-3 align-items-center mb-2"
           style={{
-            border: 0,
-            background: 'transparent',
-            outline: 'none',
+            lineHeight: '1rem'
           }}
           to={`/${props.currentTeam._humanReadableId}/settings/apis`}
         >
-          <i className="fas fa-chevron-left me-1" />
+          <i className="fas fa-chevron-left me-2" />
           {translateMethod(
             'back.to.team',
             false,
