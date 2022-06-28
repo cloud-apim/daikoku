@@ -121,7 +121,7 @@ export const TeamBilling = (props) => {
               <div className="row month__and__total">
                 <div className="col-12 month__selector d-flex align-items-center">
                   <MonthPicker updateDate={getBilling} value={state.date} />
-                  <button className="btn btn-sm btn-access-negative" onClick={sync}>
+                  <button className="btn btn-sm btn-access-negative ms-2" onClick={sync}>
                     <i className="fas fa-sync-alt ms-1" />
                   </button>
                   {lastDate && (
