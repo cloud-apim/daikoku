@@ -113,7 +113,7 @@ export const TeamIncome = () => {
                       }}
                       value={state.date}
                     />
-                    <button className="btn btn-sm btn-access-negative" onClick={sync}>
+                    <button className="btn btn-sm btn-access-negative ms-2" onClick={sync}>
                       <i className="fas fa-sync-alt" />
                     </button>
                     {lastDate && (
