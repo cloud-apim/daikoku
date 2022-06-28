@@ -80,7 +80,7 @@ export const SideBar = () => {
               width: '39px',
             }}
           >
-            <img style={{
+            <img className="img-fluid" style={{
             }} src={tenant.logo} />
           </Link>
 
