@@ -235,7 +235,7 @@ export function OtoroshiStatsVizualization(props) {
           onChange={(period) => setState({ ...state, period })}
           classNamePrefix="reactSelect"
         />
-        <span className="col period-display">{state.period.format(state.consumptions)}</span>
+        <span className="col period-display ms-2">{state.period.format(state.consumptions)}</span>
         {props.sync && (
           <button className="btn btn-access-negative" onClick={sync}>
             <i className="fas fa-sync-alt" />
