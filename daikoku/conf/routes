@@ -1,4 +1,5 @@
 ### NoDocs ###
+GET     /                                               controllers.Assets.at(path="/public", file="index.html")
 GET     /assets/*file                                   controllers.Assets.versioned(path="/public", file: Asset)
 
 GET     /_/                                             fr.maif.otoroshi.daikoku.ctrls.HomeController.cmsPageByPath(path="")
@@ -13,7 +14,7 @@ POST    /api/cms/pages                                  fr.maif.otoroshi.daikoku
 DELETE  /api/cms/pages/:id                              fr.maif.otoroshi.daikoku.ctrls.HomeController.deleteCmsPage(id)
 GET     /api/cms/pages/:id                              fr.maif.otoroshi.daikoku.ctrls.HomeController.getCmsPage(id)
 
-GET     /                                               fr.maif.otoroshi.daikoku.ctrls.HomeController.index()
+#GET     /                                               fr.maif.otoroshi.daikoku.ctrls.HomeController.index()
 GET     /robots.txt                                     fr.maif.otoroshi.daikoku.ctrls.HomeController.index()
 GET     /signup                                         fr.maif.otoroshi.daikoku.ctrls.HomeController.index()
 GET     /reset                                          fr.maif.otoroshi.daikoku.ctrls.HomeController.index()
